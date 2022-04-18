@@ -13,6 +13,7 @@
         lg="4"
         v-for="project in projects"
         :key="project.id"
+        class="d-flex flex-column"
       >
         <project-item :item="project" />
       </v-col>
