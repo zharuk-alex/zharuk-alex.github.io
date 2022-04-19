@@ -1,38 +1,65 @@
 <template>
-  <v-card>
-    <div class="d-flex">
-      <aside-component v-model="drawer"></aside-component>
-      <v-container>
-        <header-component @drawer-updated="drawer = !drawer"></header-component>
-        <content-component></content-component>
-      </v-container>
-    </div>
-    <v-footer padless>
-      <v-col class="text-center" cols="12">
-        {{ new Date().getFullYear() }} — <strong>@zzharuk</strong>
+  <main>
+    <v-row v-if="pageCount">
+      <v-col>
+        <v-spacer></v-spacer>
+        <v-pagination v-model="pagCurrPage" :length="pageCount"></v-pagination>
       </v-col>
-    </v-footer>
-  </v-card>
+    </v-row>
+    <v-row class="mt-5">
+      <v-col
+        cols="12"
+        sm="6"
+        lg="4"
+        v-for="project in projects"
+        :key="project.id"
+        class="d-flex flex-column"
+      >
+        <project-item :item="project" />
+      </v-col>
+    </v-row>
+    <v-row v-if="pageCount">
+      <v-col>
+        <v-pagination
+          class="ml-auto"
+          v-model="pagCurrPage"
+          :length="pageCount"
+        ></v-pagination>
+      </v-col>
+    </v-row>
+  </main>
 </template>
 <script>
-import AsideComponent from "@/components/Aside";
-import HeaderComponent from "@/components/Header";
-import ContentComponent from "@/components/Content";
+import ProjectItem from "@/components/project-item.vue";
 
 export default {
-  data: () => ({
-    drawer: false,
-  }),
+  data: () => ({}),
   components: {
-    AsideComponent,
-    HeaderComponent,
-    ContentComponent,
+    ProjectItem,
   },
+
   computed: {
-    isMobile() {
-      return this.$vuetify.breakpoint.xs;
+    projects() {
+      return this.$store.getters.paginatedProjects;
+    },
+    pagCurrPage: {
+      get: function () {
+        return this.$store.getters.page_number;
+      },
+      set: function (val) {
+        this.$store.commit("SET_PAGINATION_PAGE_NUMBER", val);
+      },
+    },
+    pageCount() {
+      return this.$store.getters.pageCount;
     },
   },
+  watch: {
+    pageCount() {
+      this.$store.commit("SET_PAGINATION_PAGE_NUMBER", 1);
+    },
+  },
+
   mounted() {
     this.$store.dispatch("fetchGithubProjects");
   },

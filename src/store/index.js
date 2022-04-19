@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import gh_page from '@/gh_data.js'
 
 Vue.use(Vuex)
 
@@ -10,7 +9,6 @@ const GITHUB_PAGES_URL = 'https://zzharuk.github.io';
 export default new Vuex.Store({
   state: {
     projects: [],
-    gh_pages: gh_page,
     project_filter_val: "all",
     project_search_val: "",
     sortby_value: "created",
@@ -20,7 +18,6 @@ export default new Vuex.Store({
   },
   getters: {
     projects:(state)=>state.projects,
-    gh_pages:(state)=>state.gh_pages,
     sortby_value: (state)=>state.sortby_value,
     sort_direction: (state)=>state.sort_direction,
     page_number: (state)=>state.page_number,
@@ -63,9 +60,6 @@ export default new Vuex.Store({
     SET_PROJECTS(state, projects){
       state.projects = projects
     },
-    SET_GITHUB_PAGES(state, json){
-      state.gh_pages = json
-    },
     SET_PROJECT_FILTER_VAL(state, val){
       state.project_filter_val = val
     },
@@ -86,23 +80,20 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async fetchGithubProjects({getters, commit}){
+    async fetchGithubProjects({ commit}){
       return await axios
         .get("https://api.github.com/users/zzharuk/repos")
         .then(response => {
           commit('SET_PROJECTS', response.data)
           return response.data
         })
-        .then((repos)=>{
-          return repos.map(repo=>{
-            getters.gh_pages.forEach(gh_page => {
-              if(repo.name == gh_page.name){
-                repo = {...repo, gh_pages: `${GITHUB_PAGES_URL}/${repo.name}/`}
-              }
+        .then(repos=>repos.map(repo=>({
+              ...repo, 
+              gh_pages: repo.has_pages ? `${GITHUB_PAGES_URL}/${repo.name}/` : ""
             })
-            return repo;
-          })
-        }).then(repos=>{
+          )
+        )
+        .then(repos=>{
           commit('SET_PROJECTS', repos)
         })
     }

@@ -1,19 +1,22 @@
 <template>
   <v-app>
-    <v-container v-if="!isMobile">
-      <Home />
-    </v-container>
-    <Home v-else />
+    <default-layout>
+      <template v-slot:content>
+        <Home />
+      </template>
+    </default-layout>
   </v-app>
 </template>
 
 <script>
+import DefaultLayout from "@/layouts/default-layout";
 import Home from "@/views/Home";
 
 export default {
   name: "App",
 
   components: {
+    DefaultLayout,
     Home,
   },
   computed: {

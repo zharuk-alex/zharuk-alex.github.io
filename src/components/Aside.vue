@@ -6,7 +6,7 @@
     :width="isMobile ? '80%' : 350"
     class="rounded-0 rounded-l white--text pa-2"
     v-model="localDrawer"
-    :absolute="isMobile"
+    :fixed="isMobile"
     :temporary="isMobile"
   >
     <v-list-item>
@@ -43,10 +43,10 @@ export default {
     this.localDrawer = this.value;
   },
   watch: {
-    value: function () {
+    value() {
       this.localDrawer = this.value;
     },
-    localDrawer: function () {
+    localDrawer() {
       this.$emit("input", this.localDrawer);
     },
   },
