@@ -38,8 +38,9 @@ export default new Vuex.Store({
       )
       let sortedBy = search_filtered.sort((prj_a, prj_b)=>{
         let condition;
-        if(state.sortby_value == "created"){
-          condition = state.sort_direction == 'asc' ? new Date(prj_a.created_at) - new Date(prj_b.created_at) : new Date(prj_b.created_at) - new Date(prj_a.created_at)
+        if(state.sortby_value == "created" || state.sortby_value == "pushed"){
+          let prop = state.sortby_value == "created" ? "created_at" : "pushed_at"
+          condition = state.sort_direction == 'asc' ? new Date(prj_a[prop]) - new Date(prj_b[prop]) : new Date(prj_b[prop]) - new Date(prj_a[prop])
         } else if(state.sortby_value == "reponame") {
           let name_a = prj_a.name.toString().toUpperCase()
           let name_b = prj_b.name.toString().toUpperCase()

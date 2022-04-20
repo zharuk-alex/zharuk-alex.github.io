@@ -73,6 +73,10 @@ export default {
     model_search: "",
     sortByItems: [
       {
+        text: "sort by pushed",
+        value: "pushed",
+      },
+      {
         text: "sort by created",
         value: "created",
       },

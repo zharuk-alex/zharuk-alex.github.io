@@ -21,8 +21,8 @@
         </div>
         <div>
           <small>
-            updated:
-            <strong>{{ formatDate(item.updated_at) }}</strong>
+            pushed_at:
+            <strong>{{ formatDate(item.pushed_at) }}</strong>
           </small>
         </div>
       </div>
