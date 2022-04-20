@@ -1,5 +1,9 @@
 <template>
-  <v-card class="flex d-flex flex-column" elevation="4" outlined>
+  <v-card
+    class="flex d-flex flex-column transition-swing"
+    :elevation="hover ? 6 : 2"
+    outlined
+  >
     <v-list-item three-line>
       <v-list-item-content>
         <v-list-item-title class="text-h6 mb-1 align-self-start">
@@ -8,7 +12,7 @@
         <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
-    <div class="pa-2">
+    <v-card-text>
       <v-chip v-if="item.language" class="ma-2" x-small>
         {{ item.language }}
       </v-chip>
@@ -26,8 +30,21 @@
           </small>
         </div>
       </div>
-    </div>
-
+      <div class="d-flex">
+        <!-- :to="{
+            path: `/readme/${item.name}`,
+            params: { id: item.id },
+          }" -->
+        <v-btn
+          @click="showDialog(item)"
+          class="my-5 ml-auto text-none"
+          text
+          small
+        >
+          README.md
+        </v-btn>
+      </div>
+    </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn
@@ -63,10 +80,20 @@ export default {
       type: Object,
       required: true,
     },
+    hover: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
-    formatDate: (created_at) =>
-      new Date(created_at).toISOString().split("T")[0],
+    formatDate(created_at) {
+      return new Date(created_at).toISOString().split("T")[0];
+    },
+    showDialog(item) {
+      this.$router.push({
+        path: `/readme/${item.name}`,
+      });
+    },
   },
 };
 </script>

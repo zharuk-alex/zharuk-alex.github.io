@@ -1,5 +1,6 @@
 <template>
   <main>
+    <project-filters></project-filters>
     <v-row v-if="pageCount">
       <v-col>
         <v-spacer></v-spacer>
@@ -15,7 +16,9 @@
         :key="project.id"
         class="d-flex flex-column"
       >
-        <project-item :item="project" />
+        <v-hover v-slot="{ hover }">
+          <project-item :item="project" :hover="hover" />
+        </v-hover>
       </v-col>
     </v-row>
     <v-row v-if="pageCount">
@@ -27,14 +30,17 @@
         ></v-pagination>
       </v-col>
     </v-row>
+    <router-view />
   </main>
 </template>
 <script>
+import ProjectFilters from "@/components/project-filters.vue";
 import ProjectItem from "@/components/project-item.vue";
 
 export default {
   data: () => ({}),
   components: {
+    ProjectFilters,
     ProjectItem,
   },
 

@@ -14,7 +14,8 @@ export default new Vuex.Store({
     sortby_value: "created",
     sort_direction: "desc",
     page_number: 2,
-    page_items_limit: 9
+    page_items_limit: 9,
+    repo_readme: ""
   },
   getters: {
     projects:(state)=>state.projects,
@@ -25,6 +26,8 @@ export default new Vuex.Store({
       let size = Object.values(getters.filteredProjects).length;
       return Math.ceil(size/state.page_items_limit);  
     },
+    getRepo: (state, getters) => id => getters.projects.find((repo)=>repo.id==id),
+    repoReadme: (state) => state.repo_readme,
     paginatedProjects: (state, getters)=>{
       const start = (state.page_number-1) * state.page_items_limit,
             end = start + state.page_items_limit;
@@ -78,6 +81,9 @@ export default new Vuex.Store({
     },
     SET_PAGINATION_PAGE_NUMBER(state, val){
       state.page_number = val
+    },
+    SET_REPO_README(state, val){
+      state.repo_readme = val;
     }
   },
   actions: {
@@ -97,6 +103,18 @@ export default new Vuex.Store({
         .then(repos=>{
           commit('SET_PROJECTS', repos)
         })
-    }
+    },
+    async fetchGithubReadme({commit},repo){
+      return await axios
+        .get(`https://raw.githubusercontent.com/zzharuk/${repo}/master/README.md`)
+        .then(response => {
+          commit('SET_REPO_README', response.data)
+          return response.data
+        })
+        .catch(error=>{
+          console.log(error)
+          commit('SET_REPO_README', "README.md not exist")
+        })
+    },
   }
 })

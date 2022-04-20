@@ -34,11 +34,6 @@ export default {
     title: "zzharuk.github.io",
     subtext: "javascript developer",
   }),
-  computed: {
-    isMobile() {
-      return this.$vuetify.breakpoint.xs;
-    },
-  },
   mounted() {
     this.localDrawer = this.value;
   },
