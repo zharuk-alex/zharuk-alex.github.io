@@ -1,5 +1,5 @@
 <template>
-  <v-row class="mt-4">
+  <v-row class="mt-4" :class="{ 'filters-disabled': disabled }">
     <v-col>
       <v-btn-toggle
         v-model="model_filter_ghpages"
@@ -52,6 +52,13 @@
 <script>
 export default {
   name: "ProjectsFilters",
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+  },
   data: () => ({
     model_filter_ghpages: "all",
     model_search: "",
@@ -100,5 +107,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.filters-disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
 </style>

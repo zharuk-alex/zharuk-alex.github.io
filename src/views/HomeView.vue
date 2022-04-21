@@ -1,10 +1,13 @@
 <template>
   <main>
-    <project-filters></project-filters>
-    <v-row v-if="pageCount">
+    <HeaderFilters :disabled="!isLoaded" />
+    <v-row v-if="showPagination">
       <v-col>
-        <v-spacer></v-spacer>
-        <v-pagination v-model="pagCurrPage" :length="pageCount"></v-pagination>
+        <v-pagination
+          class="ml-auto"
+          v-model="pagCurrPage"
+          :length="pageCount"
+        ></v-pagination>
       </v-col>
     </v-row>
     <v-row class="mt-5">
@@ -16,12 +19,17 @@
         :key="project.id"
         class="d-flex flex-column"
       >
-        <v-hover v-slot="{ hover }">
-          <project-item :item="project" :hover="hover" />
+        <v-hover v-if="isLoaded" v-slot="{ hover }">
+          <component
+            :is="'project-item'"
+            :item="project"
+            :hover="hover"
+          ></component>
         </v-hover>
+        <component v-else :is="'project-skeleton'"></component>
       </v-col>
     </v-row>
-    <v-row v-if="pageCount">
+    <v-row v-if="showPagination">
       <v-col>
         <v-pagination
           class="ml-auto"
@@ -34,19 +42,28 @@
   </main>
 </template>
 <script>
-import ProjectFilters from "@/components/project-filters.vue";
+import HeaderFilters from "@/components/HeaderFilters.vue";
 import ProjectItem from "@/components/project-item.vue";
+import ProjectSkeleton from "@/components/project-skeleton.vue";
 
 export default {
-  data: () => ({}),
+  data: () => ({
+    isLoaded: false,
+  }),
   components: {
-    ProjectFilters,
+    HeaderFilters,
     ProjectItem,
+    ProjectSkeleton,
   },
 
   computed: {
     projects() {
-      return this.$store.getters.paginatedProjects;
+      let projects = this.$store.getters.paginatedProjects,
+        projects_loaded = projects.length > 0,
+        projects_per_page = this.$store.getters.projectsPerPage;
+      return projects_loaded
+        ? projects
+        : [...Array(10).keys(projects_per_page)];
     },
     pagCurrPage: {
       get: function () {
@@ -59,6 +76,9 @@ export default {
     pageCount() {
       return this.$store.getters.pageCount;
     },
+    showPagination() {
+      return this.isLoaded && this.pageCount;
+    },
   },
   watch: {
     pageCount() {
@@ -67,7 +87,9 @@ export default {
   },
 
   mounted() {
-    this.$store.dispatch("fetchGithubProjects");
+    this.$store
+      .dispatch("fetchGithubProjects")
+      .then(() => (this.isLoaded = true));
   },
 };
 </script>

@@ -4,6 +4,13 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
+function githubSecretAuthToken(){
+  const token = process.env.VUE_APP_GIT_TOKEN
+  return token ? {
+    'Authorization': `token ${token}` 
+  } : {}
+}
+
 const GITHUB_PAGES_URL = 'https://zzharuk.github.io';
 
 export default new Vuex.Store({
@@ -13,9 +20,11 @@ export default new Vuex.Store({
     project_search_val: "",
     sortby_value: "created",
     sort_direction: "desc",
-    page_number: 2,
-    page_items_limit: 9,
-    repo_readme: ""
+    page_number: 1,
+    projects_per_page: 9,
+    repo_readme: "",
+    repo_branch: "master",
+    repo_branches: [],
   },
   getters: {
     projects:(state)=>state.projects,
@@ -24,13 +33,16 @@ export default new Vuex.Store({
     page_number: (state)=>state.page_number,
     pageCount: (state, getters)=>{
       let size = Object.values(getters.filteredProjects).length;
-      return Math.ceil(size/state.page_items_limit);  
+      return Math.ceil(size/state.projects_per_page);  
     },
+    projectsPerPage: (state)=>state.projects_per_page,
     getRepo: (state, getters) => id => getters.projects.find((repo)=>repo.id==id),
     repoReadme: (state) => state.repo_readme,
+    repoBranch: (state) => state.repo_branch,
+    repoBranches: (state) => state.repo_branches,
     paginatedProjects: (state, getters)=>{
-      const start = (state.page_number-1) * state.page_items_limit,
-            end = start + state.page_items_limit;
+      const start = (state.page_number-1) * state.projects_per_page,
+            end = start + state.projects_per_page;
       return getters.filteredProjects.slice(start, end);
     },
     filteredProjects: (state)=>{      
@@ -84,12 +96,21 @@ export default new Vuex.Store({
     },
     SET_REPO_README(state, val){
       state.repo_readme = val;
-    }
+    },
+    SET_REPO_BRANCH(state, val){
+      state.repo_branch = val;
+    },
+    SET_REPO_BRANCHES(state, val){
+      state.repo_branches = val;
+    },
   },
   actions: {
     async fetchGithubProjects({ commit}){
+      console.log("VUE_APP_GIT_TOKEN", process.env.VUE_APP_GIT_TOKEN)
       return await axios
-        .get("https://api.github.com/users/zzharuk/repos")
+        .get("https://api.github.com/users/zzharuk/repos",{
+          'headers': {...githubSecretAuthToken()}
+        })
         .then(response => {
           commit('SET_PROJECTS', response.data)
           return response.data
@@ -104,17 +125,32 @@ export default new Vuex.Store({
           commit('SET_PROJECTS', repos)
         })
     },
-    async fetchGithubReadme({commit},repo){
+    async fetchGithubReadme({commit},{repo,branch}){
       return await axios
-        .get(`https://raw.githubusercontent.com/zzharuk/${repo}/master/README.md`)
+        .get(`https://raw.githubusercontent.com/zzharuk/${repo}/${branch}/README.md`)
         .then(response => {
           commit('SET_REPO_README', response.data)
           return response.data
         })
         .catch(error=>{
           console.log(error)
-          commit('SET_REPO_README', "README.md not exist")
+          commit('SET_REPO_README', false)
         })
     },
+    async fetchRepoBranches({commit}, repo){
+      return await axios
+        .get(`https://api.github.com/repos/zzharuk/${repo}/branches`,{
+          'headers': {...githubSecretAuthToken()}
+        })
+        .then(response => response.data)
+        .then((r)=>r.map(branch=>({text: branch.name, value: branch.name})) )
+        .then(branches=>{
+          commit('SET_REPO_BRANCHES', branches);
+          commit('SET_REPO_BRANCH', branches[0].value);
+        })
+        .catch(error=>{
+          console.log(error)
+        })
+    }
   }
 })

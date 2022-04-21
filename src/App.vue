@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <default-layout>
-      <template v-slot:content>
+      <template #content>
         <router-view />
       </template>
     </default-layout>
@@ -13,19 +13,8 @@ import DefaultLayout from "@/layouts/default-layout";
 
 export default {
   name: "App",
-
   components: {
     DefaultLayout,
   },
-  computed: {
-    isMobile() {
-      return this.$vuetify.breakpoint.xs;
-    },
-  },
-  data: () => ({
-    //
-  }),
-  mounted() {},
 };
 </script>
-<style scoped>
