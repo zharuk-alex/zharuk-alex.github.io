@@ -20,37 +20,42 @@
       </v-list-item-content>
     </v-list-item>
     <v-divider></v-divider>
-    <v-btn class="my-2" href="https://github.com/zzharuk/" target="_blank" text>
+    <v-btn
+      class="my-2"
+      href="https://github.com/zharuk-alex/"
+      target="_blank"
+      text
+    >
       github profile
     </v-btn>
   </v-navigation-drawer>
 </template>
 
 <script>
-export default {
-  props: { value: { type: Boolean } },
-  data: () => ({
-    localDrawer: false,
-    title: "zzharuk.github.io",
-    subtext: "javascript developer",
-  }),
-  mounted() {
-    this.localDrawer = this.value;
-  },
-  watch: {
-    value() {
+  export default {
+    props: { value: { type: Boolean } },
+    data: () => ({
+      localDrawer: false,
+      title: 'zharuk-alex.github.io',
+      subtext: 'javascript developer',
+    }),
+    mounted() {
       this.localDrawer = this.value;
     },
-    localDrawer() {
-      this.$emit("input", this.localDrawer);
+    watch: {
+      value() {
+        this.localDrawer = this.value;
+      },
+      localDrawer() {
+        this.$emit('input', this.localDrawer);
+      },
     },
-  },
-};
+  };
 </script>
 
 <style lang="scss" scoped>
-.v-navigation-drawer {
-  min-height: 100%;
-  height: auto !important;
-}
+  .v-navigation-drawer {
+    min-height: 100%;
+    height: auto !important;
+  }
 </style>
