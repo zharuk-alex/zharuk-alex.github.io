@@ -106,7 +106,6 @@ export default new Vuex.Store({
   },
   actions: {
     async fetchGithubProjects({ commit }) {
-      console.log("VUE_APP_GIT_TOKEN", process.env.VUE_APP_GIT_TOKEN)
       return await axios
         .get("https://api.github.com/users/zharuk-alex/repos", {
           'headers': { ...githubSecretAuthToken() }

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
+import ReadmeDialog from '@/views/ReadmeDialog.vue'
 
 Vue.use(VueRouter)
 
@@ -13,17 +14,14 @@ const routes = [
     children: [
       {
         path: '/readme/:id',
-        component: import('@/views/ReadmeDialog.vue')
+        component: ReadmeDialog
       },
     ]
-  },
-  {
-    path: '/repos/:id',
-    component: () => import('@/views/SingleRepo.vue')
   },
 ]
 
 const router = new VueRouter({
+  // mode: 'history',
   base: process.env.BASE_URL,
   routes
 })

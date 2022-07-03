@@ -1,16 +1,15 @@
 <template>
   <v-footer padless>
     <v-col class="text-center" cols="12">
-      {{ new Date().getFullYear() }} — <strong>@zzharuk</strong>
+      {{ new Date().getFullYear() }} — <strong>zharuk-alex</strong>
     </v-col>
   </v-footer>
 </template>
 
 <script>
-export default {
-  name: "Footer",
-};
+  export default {
+    name: 'Footer',
+  };
 </script>
 
-<style>
-</style>
+<style></style>
