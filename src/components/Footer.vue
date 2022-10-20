@@ -11,5 +11,3 @@
     name: 'Footer',
   };
 </script>
-
-<style></style>

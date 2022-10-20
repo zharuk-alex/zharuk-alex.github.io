@@ -4,13 +4,6 @@ import axios from 'axios'
 
 Vue.use(Vuex)
 
-function githubSecretAuthToken() {
-  const token = process.env.VUE_APP_GIT_TOKEN
-  return token ? {
-    'Authorization': `token ${token}`
-  } : {}
-}
-
 const GITHUB_PAGES_URL = 'https://zharuk-alex.github.io';
 
 export default new Vuex.Store({
@@ -106,23 +99,23 @@ export default new Vuex.Store({
   },
   actions: {
     async fetchGithubProjects({ commit }) {
-      return await axios
+      const response = await axios
         .get("https://api.github.com/users/zharuk-alex/repos", {
-          'headers': { ...githubSecretAuthToken() }
-        })
-        .then(response => {
-          commit('SET_PROJECTS', response.data)
-          return response.data
-        })
-        .then(repos => repos.map(repo => ({
-          ...repo,
-          gh_pages: repo.has_pages ? `${GITHUB_PAGES_URL}/${repo.name}/` : ""
-        })
-        )
-        )
-        .then(repos => {
-          commit('SET_PROJECTS', repos)
-        })
+          headers: {
+            accept: "application/vnd.github+json",
+          },
+          params: {
+            sort: "updated",
+            per_page: 100
+          }
+        });
+
+      const data = await response.data.map(repo => ({
+        ...repo,
+        gh_pages: repo.has_pages ? `${GITHUB_PAGES_URL}/${repo.name}/` : ""
+      }))
+
+      commit('SET_PROJECTS', data)
     },
     async fetchGithubReadme({ commit }, { repo, branch }) {
       return await axios
@@ -138,9 +131,7 @@ export default new Vuex.Store({
     },
     async fetchRepoBranches({ commit }, repo) {
       return await axios
-        .get(`https://api.github.com/repos/zharuk-alex/${repo}/branches`, {
-          'headers': { ...githubSecretAuthToken() }
-        })
+        .get(`https://api.github.com/repos/zharuk-alex/${repo}/branches`)
         .then(response => response.data)
         .then((r) => r.map(branch => ({ text: branch.name, value: branch.name })))
         .then(branches => {
